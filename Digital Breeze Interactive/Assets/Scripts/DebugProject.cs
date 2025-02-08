@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DebugProject : MonoBehaviour
@@ -18,6 +19,7 @@ public class DebugProject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Time.timeScale = 1;
         UpdateStateImageColor();
     }
 
@@ -52,5 +54,35 @@ public class DebugProject : MonoBehaviour
         {
             stateImage[5].color = Color.red;
         }
+    }
+
+    public void ChangeState(int state)
+    {
+        switch (state)
+        {
+            case 0:
+                stateManager.SelectState(stateManager.idleState);
+                break;
+            case 1:
+                stateManager.SelectState(stateManager.runState);
+                break;
+            case 2:
+                stateManager.SelectState(stateManager.jumpState);
+                break;
+            case 3:
+                stateManager.SelectState(stateManager.attackState);
+                break;
+            case 4:
+                stateManager.SelectState(stateManager.hurtState);
+                break;
+            case 5:
+                stateManager.SelectState(stateManager.dieState);
+                break;
+        }
+    }
+
+    public void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

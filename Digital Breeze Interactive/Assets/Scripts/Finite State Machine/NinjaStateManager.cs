@@ -23,6 +23,11 @@ public class NinjaStateManager : MonoBehaviour
     public HurtState hurtState;
     public DieState dieState;
 
+    private bool onChangeState;
+    public bool isDead;
+
+    private bool isTouchscreenInput = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,37 +39,44 @@ public class NinjaStateManager : MonoBehaviour
         dieState.InitializedComponent(this);
 
         currentNinjaState = idleState;
-        currentNinjaState.OnEnableState();
+        currentNinjaState.EnterState();
     }
 
     // Update is called once per frame
     void Update()
-    {     
-        HandleMovePlayer();
+    {
+        if (isDead) return;
+        if (!isTouchscreenInput)
+        {
+            HandleMovePlayer();
+        }
         CheckGroundStatus();
         HandleFlip();
         HandleJump();
         HandleAttack();
+        if (onChangeState) return;
         currentNinjaState.UpdateState();
     }
 
-
     private void FixedUpdate()
     {
+        if (onChangeState) return;
         currentNinjaState.FixedUpdateState();
     }
 
     public void SelectState(NinjaState _selectState)
     {
+        onChangeState = true;
+        currentNinjaState.ExitState();
         currentNinjaState = _selectState;
-        currentNinjaState.OnEnableState();
+        currentNinjaState.EnterState();
+        onChangeState = false;
     }
 
     void HandleMovePlayer()
     {
         horizontal = Input.GetAxisRaw("Horizontal");
     }
-
 
     void CheckGroundStatus()
     {
@@ -81,7 +93,7 @@ public class NinjaStateManager : MonoBehaviour
 
     void HandleAttack()
     {
-        if (Input.GetMouseButtonDown(0) && isGrounded && currentNinjaState != jumpState)
+        if (Input.GetMouseButtonDown(1) && isGrounded && horizontal == 0)
         {
             SelectState(attackState);
         }
@@ -96,7 +108,6 @@ public class NinjaStateManager : MonoBehaviour
         }
     }
 
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Enemy"))
@@ -104,5 +115,30 @@ public class NinjaStateManager : MonoBehaviour
             SelectState(hurtState);
             hurtState.OnTriggerEnter2DState(collision);
         }
+    }
+
+    public void TouchscreenMoveHandleDown(int moveX)
+    {
+        isTouchscreenInput = true;
+        horizontal = moveX;
+    }
+
+    public void TouchscreenMoveHandleUp()
+    {
+        isTouchscreenInput = false;
+        horizontal = 0;
+    }
+
+    public void TouchscreenJumpHandle()
+    {
+        if (isGrounded)
+        {
+            SelectState(jumpState);
+        }
+    }
+
+    public void TouchscreenAttackHandle()
+    {
+        SelectState(attackState);
     }
 }

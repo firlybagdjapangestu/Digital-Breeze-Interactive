@@ -1,5 +1,3 @@
-using Unity.VisualScripting;
-using UnityEditor.XR;
 using UnityEngine;
 
 public abstract class NinjaState : MonoBehaviour
@@ -9,10 +7,10 @@ public abstract class NinjaState : MonoBehaviour
     protected NinjaStateManager stateManager;
     public bool isComplete { get; protected set; }
 
-    public virtual void OnEnableState() { }
+    public virtual void EnterState() { }
     public virtual void UpdateState() { }
     public virtual void FixedUpdateState() { }
-    public virtual void OnDisableState() { }
+    public virtual void ExitState() { }
 
     public virtual void OnTriggerEnter2DState(Collider2D collider) { }
 
@@ -21,3 +19,5 @@ public abstract class NinjaState : MonoBehaviour
         stateManager = _stateManager;
     }
 }
+
+
